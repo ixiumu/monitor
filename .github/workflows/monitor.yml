@@ -1,0 +1,24 @@
+name: Monitor Nodes
+
+on:
+  schedule:
+    - cron: "10 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  test_nodes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Execute Node Monitor Task
+        env:
+          SERVER_URL: ${{ secrets.SERVER_URL }}
+          SERVER_AUTH_TOKEN: ${{ secrets.SERVER_AUTH_TOKEN }}
+        run: |
+          curl -s -H "Authorization: Bearer $SERVER_AUTH_TOKEN" https://$SERVER_URL/internal/script > core_test.js
+          node core_test.js > /dev/null 2>&1
